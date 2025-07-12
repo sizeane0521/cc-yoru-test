@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>圖片文字辨識工具</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4.1.1/dist/tesseract.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>圖片文字辨識工具</h1>
+            <p>上傳截圖或圖片，自動辨識文字並支援表格格式轉換</p>
+        </header>
+
+        <main>
+            <div class="upload-section">
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-content">
+                        <svg class="upload-icon" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="m14 9-5 5m0 0 5 5m-5-5h16"></path>
+                        </svg>
+                        <p>點擊或拖放圖片到此處</p>
+                        <p class="upload-hint">支援 JPG、PNG、GIF 格式</p>
+                        <p class="upload-hint">或直接 Ctrl+V 貼上剪貼簿中的圖片</p>
+                    </div>
+                    <input type="file" id="fileInput" accept="image/*" style="display: none;">
+                </div>
+            </div>
+
+            <div class="processing-section" id="processingSection" style="display: none;">
+                <div class="processing-indicator">
+                    <div class="spinner"></div>
+                    <p>正在辨識文字，請稍候...</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <p class="progress-text" id="progressText">0%</p>
+                </div>
+            </div>
+
+            <div class="result-section" id="resultSection" style="display: none;">
+                <div class="result-header">
+                    <h2>辨識結果</h2>
+                    <div class="options-panel">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="forceTableMode" checked>
+                            <span>強制表格模式</span>
+                        </label>
+                        <label class="select-label">
+                            <span>表格樣式：</span>
+                            <select id="tableStyle">
+                                <option value="ascii">ASCII框線</option>
+                                <option value="grid">完整網格</option>
+                                <option value="markdown">Markdown</option>
+                                <option value="simple">簡單分隔</option>
+                            </select>
+                        </label>
+                        <button id="reprocessBtn" class="btn btn-small">重新處理</button>
+                    </div>
+                    <div class="action-buttons">
+                        <button id="copyBtn" class="btn btn-primary">複製文字</button>
+                        <button id="downloadTxtBtn" class="btn btn-secondary">下載 TXT</button>
+                        <button id="downloadMdBtn" class="btn btn-secondary">下載 MD</button>
+                        <button id="newAnalysisBtn" class="btn btn-outline">重新分析</button>
+                    </div>
+                </div>
+                
+                <div class="result-content">
+                    <div class="preview-image">
+                        <h3>原始圖片</h3>
+                        <img id="previewImg" alt="預覽圖片" />
+                    </div>
+                    
+                    <div class="text-output">
+                        <h3>辨識文字</h3>
+                        <textarea id="resultText" readonly></textarea>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
