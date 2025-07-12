@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>顏色吸取工具</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="drag-handle" id="dragHandle" title="拖拽移動視窗">⋮⋮</div>
+            <h1>顏色吸取工具</h1>
+            <button id="pickColor" class="pick-btn">
+                <span class="icon">🎨</span>
+                吸取顏色
+            </button>
+        </div>
+
+        <div id="currentColor" class="color-section hidden">
+            <h2>當前顏色</h2>
+            <div class="color-display">
+                <div id="colorPreview" class="color-preview"></div>
+                <div class="color-info">
+                    <div class="color-value" id="hexValue" data-format="hex">#000000</div>
+                    <div class="color-value" id="rgbValue" data-format="rgb">rgb(0, 0, 0)</div>
+                    <div class="color-value" id="hslValue" data-format="hsl">hsl(0, 0%, 0%)</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="colorSuggestions" class="suggestions-section hidden">
+            <h2>色彩建議</h2>
+            <div class="suggestions-grid">
+                <div class="suggestion-group">
+                    <h3>輔助色</h3>
+                    <div id="complementaryColors" class="color-palette"></div>
+                </div>
+                <div class="suggestion-group">
+                    <h3>類似色</h3>
+                    <div id="analogousColors" class="color-palette"></div>
+                </div>
+                <div class="suggestion-group">
+                    <h3>三角色</h3>
+                    <div id="triadicColors" class="color-palette"></div>
+                </div>
+                <div class="suggestion-group">
+                    <h3>分割補色</h3>
+                    <div id="splitComplementaryColors" class="color-palette"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="colorHistory" class="history-section">
+            <h2>顏色歷史</h2>
+            <div id="historyList" class="history-list"></div>
+            <button id="clearHistory" class="clear-btn">清除歷史</button>
+        </div>
+
+        <div class="footer">
+            <small>專為UI/UX設計師設計</small>
+        </div>
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+</html>

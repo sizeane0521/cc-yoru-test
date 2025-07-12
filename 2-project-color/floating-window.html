@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>顏色吸取工具</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            width: 350px;
+            min-height: 500px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            user-select: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .drag-header {
+            background: rgba(255,255,255,0.1);
+            padding: 10px 20px;
+            cursor: move;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .drag-header h1 {
+            color: white;
+            font-size: 16px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.8);
+            font-size: 18px;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .close-btn:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        .content {
+            padding: 20px;
+            height: calc(100% - 50px);
+            overflow-y: auto;
+        }
+
+        .pick-btn {
+            background: white;
+            border: none;
+            border-radius: 25px;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0 auto 20px auto;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .pick-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .color-section, .suggestions-section, .history-section {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .color-section h2, .suggestions-section h2, .history-section h2 {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .color-display {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .color-preview {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            border: 3px solid #f0f0f0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            flex-shrink: 0;
+        }
+
+        .color-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .color-value {
+            background: #f8f9fa;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid #e9ecef;
+        }
+
+        .color-value:hover {
+            background: #e9ecef;
+            transform: translateX(2px);
+        }
+
+        .color-value.copied {
+            background: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+
+        .suggestions-grid {
+            display: grid;
+            gap: 20px;
+        }
+
+        .suggestion-group h3 {
+            font-size: 14px;
+            margin-bottom: 10px;
+            color: #666;
+        }
+
+        .color-palette {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .palette-color {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .palette-color:hover {
+            transform: scale(1.1);
+            border-color: #333;
+        }
+
+        .history-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+            min-height: 48px;
+        }
+
+        .history-color {
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 2px solid #f0f0f0;
+            transition: all 0.2s ease;
+        }
+
+        .history-color:hover {
+            transform: scale(1.1);
+            border-color: #333;
+        }
+
+        .clear-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .clear-btn:hover {
+            background: #ff5252;
+            transform: translateY(-1px);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transform: translateX(300px);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .pick-btn.picking {
+            animation: pulse 1s infinite;
+            background: #ffd700;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+    </style>
+</head>
+<body>
+    <div class="drag-header" id="dragHeader">
+        <h1>🎨 顏色吸取工具</h1>
+        <button class="close-btn" id="closeBtn">✕</button>
+    </div>
+    
+    <div class="content">
+        <button id="pickColor" class="pick-btn">
+            <span class="icon">🎨</span>
+            吸取顏色
+        </button>
+
+        <div id="currentColor" class="color-section hidden">
+            <h2>當前顏色</h2>
+            <div class="color-display">
+                <div id="colorPreview" class="color-preview"></div>
+                <div class="color-info">
+                    <div class="color-value" id="hexValue" data-format="hex">#000000</div>
+                    <div class="color-value" id="rgbValue" data-format="rgb">rgb(0, 0, 0)</div>
+                    <div class="color-value" id="hslValue" data-format="hsl">hsl(0, 0%, 0%)</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="colorSuggestions" class="suggestions-section hidden">
+            <h2>色彩建議</h2>
+            <div class="suggestions-grid">
+                <div class="suggestion-group">
+                    <h3>輔助色</h3>
+                    <div id="complementaryColors" class="color-palette"></div>
+                </div>
+                <div class="suggestion-group">
+                    <h3>類似色</h3>
+                    <div id="analogousColors" class="color-palette"></div>
+                </div>
+                <div class="suggestion-group">
+                    <h3>三角色</h3>
+                    <div id="triadicColors" class="color-palette"></div>
+                </div>
+                <div class="suggestion-group">
+                    <h3>分割補色</h3>
+                    <div id="splitComplementaryColors" class="color-palette"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="colorHistory" class="history-section">
+            <h2>顏色歷史</h2>
+            <div id="historyList" class="history-list"></div>
+            <button id="clearHistory" class="clear-btn">清除歷史</button>
+        </div>
+    </div>
+
+    <script src="floating-window.js"></script>
+</body>
+</html>
